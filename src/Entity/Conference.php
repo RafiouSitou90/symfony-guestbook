@@ -17,7 +17,7 @@ class Conference
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -115,5 +115,10 @@ class Conference
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->city . ' ' . $this->year;
     }
 }
