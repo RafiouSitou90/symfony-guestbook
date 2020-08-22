@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+
+    database:
+        image: postgres:12-alpine
+        environment:
+            POSTGRES_USER: symfony_guestbook
+            POSTGRES_PASSWORD: symfony_guestbook
+            POSTGRES_DB: symfony_guestbook
+        ports:
+            - 5432:5432
+
+    adminer:
+        image: adminer
+        environment:
+            ADMINER_DESIGN: pepa-linha
+            ADMINER_DEFAULT_SERVER: symfony_guestbook
+        links:
+            - database
+        ports:
+            - 8888:8080
