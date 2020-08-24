@@ -6,6 +6,7 @@
     <h2>{{ conference }} Conference</h2>
 
     {% if comments | length > 0 %}
+        <div>There are {{ comments | length }} comments.</div>
         {% for comment in comments %}
             {% if comment.photofilename %}
                 <img
@@ -17,6 +18,14 @@
             <small>{{ comment.createdAt | format_datetime('medium', 'short') }}</small>
             <p>{{ comment.text | raw }}</p>
         {% endfor %}
+
+        {% if previous >= 0 %}
+            <a href="{{ path('app_conference_show', { id: conference.id, offset: previous }) }}">Previous</a>
+        {% endif %}
+
+        {% if next < comments | length %}
+            <a href="{{ path('app_conference_show', { id: conference.id, offset: next }) }}">Next</a>
+        {% endif %}
     {% else %}
         <div>No comments have been posted yet for this conference.</div>
     {% endif %}
