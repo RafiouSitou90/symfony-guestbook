@@ -11,6 +11,11 @@ services:
         ports:
             - 5432:5432
 
+    redis:
+        image: redis:5-alpine
+        ports:
+            - 6379:6379
+
     adminer:
         image: adminer
         environment:
