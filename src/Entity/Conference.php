@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\Timestamps;
 use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,9 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ConferenceRepository::class)
+ * @ORM\Table(name="tab_conferences")
+ *
+ * @ORM\HasLifecycleCallbacks()
  */
 class Conference
 {
+    use Timestamps;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
