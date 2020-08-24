@@ -2,15 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\Timestamps;
 use App\Repository\CommentRepository;
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
+ * @ORM\Table(name="tab_comments")
+ *
+ * @ORM\HasLifecycleCallbacks()
  */
 class Comment
 {
+    use Timestamps;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -32,11 +37,6 @@ class Comment
      * @ORM\Column(type="string", length=255)
      */
     private string $email;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private DateTimeInterface $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Conference::class, inversedBy="comments")
@@ -86,18 +86,6 @@ class Comment
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }
