@@ -29,4 +29,11 @@
     {% else %}
         <div>No comments have been posted yet for this conference.</div>
     {% endif %}
+
+    <h2>Add your own feedback</h2>
+
+    {{ form_start(comment_form) }}
+        {{ form_widget(comment_form) }}
+        <button type="submit">Submit</button>
+    {{ form_end(comment_form) }}
 {% endblock %}

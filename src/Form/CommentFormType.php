@@ -28,8 +28,6 @@ class CommentFormType extends AbstractType
                     new Image(['maxSize' => '1024k'])
                 ]
             ])
-            ->add('createdAt')
-            ->add('conference')
         ;
     }
 
