@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class ConferenceController
  * @package App\Controller
  *
- * @Route("/", name="app_conference_")
+ * @Route("", name="app_conference_")
  */
 class ConferenceController extends AbstractController
 {
@@ -42,7 +42,7 @@ class ConferenceController extends AbstractController
     }
 
     /**
-     * @Route("/conference/{id}", name="show", methods={"GET"})
+     * @Route("/conference/{slug}", name="show", methods={"GET"})
      *
      * @param Request $request
      * @param Conference $conference
