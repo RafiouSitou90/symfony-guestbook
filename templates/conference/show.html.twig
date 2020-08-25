@@ -8,15 +8,16 @@
     {% if comments | length > 0 %}
         <div>There are {{ comments | length }} comments.</div>
         {% for comment in comments %}
+            <h4>{{ comment.author }}</h4>
+            <small>{{ comment.createdAt | format_datetime('medium', 'short') }}</small>
+            <p>{{ comment.text | raw }}</p>
             {% if comment.photofilename %}
                 <img
                     src="{{ asset('uploads/photos/' ~ comment.photoFilename)}}"
                     alt="{{ conference ~ ' ' ~ comment.author }}"
+                    style="width: 200px; height: 100px;"
                 />
             {% endif %}
-            <h4>{{ comment.author }}</h4>
-            <small>{{ comment.createdAt | format_datetime('medium', 'short') }}</small>
-            <p>{{ comment.text | raw }}</p>
         {% endfor %}
 
         {% if previous >= 0 %}
@@ -29,4 +30,11 @@
     {% else %}
         <div>No comments have been posted yet for this conference.</div>
     {% endif %}
+
+    <h2>Add your own feedback</h2>
+
+    {{ form_start(comment_form) }}
+        {{ form_widget(comment_form) }}
+        <button type="submit">Submit</button>
+    {{ form_end(comment_form) }}
 {% endblock %}
