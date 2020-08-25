@@ -8,7 +8,10 @@ use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,7 +37,10 @@ class ConferenceController extends AbstractController
      */
     private EntityManagerInterface $entityManager;
 
+    private string $photoDir;
+
     public function __construct(
+        string $photoDir,
         ConferenceRepository $conferenceRepository,
         CommentRepository $commentRepository,
         EntityManagerInterface $entityManager
@@ -43,6 +49,7 @@ class ConferenceController extends AbstractController
         $this->conferenceRepository = $conferenceRepository;
         $this->commentRepository = $commentRepository;
         $this->entityManager = $entityManager;
+        $this->photoDir = $photoDir;
     }
 
     /**
@@ -59,6 +66,7 @@ class ConferenceController extends AbstractController
      * @param Request $request
      * @param Conference $conference
      * @return Response
+     * @throws Exception
      */
     public function show (Request $request, Conference $conference)
     {
@@ -69,6 +77,19 @@ class ConferenceController extends AbstractController
 
         if ($comment_form->isSubmitted() && $comment_form->isValid()) {
             $comment->setConference($conference);
+
+            /** @var File $photo */
+            if ($photo = $comment_form['photo']->getData()) {
+                $filename = bin2hex(random_bytes(6)). '.' . $photo->guessExtension();
+
+                try {
+                    $photo->move($this->photoDir, $filename);
+                } catch (FileException $e) {
+                }
+
+                $comment->setPhotoFilename($filename);
+            }
+
             $this->entityManager->persist($comment);
             $this->entityManager->flush();
 
