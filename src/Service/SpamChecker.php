@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Comment;
-use http\Exception\RuntimeException;
+use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
