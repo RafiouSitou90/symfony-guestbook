@@ -5,6 +5,7 @@
         "php": ">=7.4.6",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-http": "*",
         "composer/package-versions-deprecated": "1.10.99.1",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.1",

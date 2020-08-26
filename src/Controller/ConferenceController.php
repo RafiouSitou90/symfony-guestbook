@@ -7,14 +7,20 @@ use App\Entity\Conference;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
+use App\Service\SpamChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use http\Exception\RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class ConferenceController
@@ -38,18 +44,24 @@ class ConferenceController extends AbstractController
     private EntityManagerInterface $entityManager;
 
     private string $photoDir;
+    /**
+     * @var SpamChecker
+     */
+    private SpamChecker $spamChecker;
 
     public function __construct(
         string $photoDir,
         ConferenceRepository $conferenceRepository,
         CommentRepository $commentRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        SpamChecker $spamChecker
     )
     {
         $this->conferenceRepository = $conferenceRepository;
         $this->commentRepository = $commentRepository;
         $this->entityManager = $entityManager;
         $this->photoDir = $photoDir;
+        $this->spamChecker = $spamChecker;
     }
 
     /**
@@ -66,6 +78,10 @@ class ConferenceController extends AbstractController
      * @param Request $request
      * @param Conference $conference
      * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      * @throws Exception
      */
     public function show (Request $request, Conference $conference)
@@ -91,6 +107,18 @@ class ConferenceController extends AbstractController
             }
 
             $this->entityManager->persist($comment);
+
+            $context = [
+                'user_ip' => $request->getClientIp(),
+                'user_agent' => $request->headers->get('user_agent'),
+                'referer' => $request->headers->get('referer'),
+                'permalink' => $request->getUri()
+            ];
+
+            if (2 === $this->spamChecker->getSpamScore($comment, $context)) {
+                throw new RuntimeException('Blattant spam, go away!');
+            }
+
             $this->entityManager->flush();
 
             return $this->redirectToRoute('app_conference_show', ['slug' => $conference->getSlug()]);
