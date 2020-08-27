@@ -20,9 +20,9 @@ final class Version20200824170004 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP SEQUENCE admin_id_seq CASCADE');
-        $this->addSql('DROP SEQUENCE comment_id_seq CASCADE');
-        $this->addSql('DROP SEQUENCE conference_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE IF EXISTS admin_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE IF EXISTS comment_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE IF EXISTS conference_id_seq CASCADE');
         $this->addSql('CREATE SEQUENCE tab_admins_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE tab_comments_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE tab_conferences_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
