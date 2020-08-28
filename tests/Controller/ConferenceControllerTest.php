@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller;
 
+use App\Repository\CommentRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 //use Symfony\Component\Panther\Client;
@@ -21,6 +23,11 @@ class ConferenceControllerTest extends WebTestCase
     protected KernelBrowser $client;
 
     /**
+     * @var EntityManagerInterface
+     */
+    protected EntityManagerInterface $entityManager;
+
+    /**
      * @return void
      */
     public function setUp (): void
@@ -28,6 +35,7 @@ class ConferenceControllerTest extends WebTestCase
 //        $this->client = static::createPantherClient(['external_base_uri' => 'http://127.0.0.1:8000']);
 
         $this->client = static::createClient();
+        $this->entityManager = self::$container->get('doctrine')->getManager();
     }
 
     public function testIndex ()
@@ -60,11 +68,15 @@ class ConferenceControllerTest extends WebTestCase
         $this->client->submitForm('Submit', [
             'comment_form[author]' => 'Rafiou',
             'comment_form[text]' => 'Some feedback from an automated functional test',
-            'comment_form[email]' => 'rafiou@domain.com',
+            'comment_form[email]' => $email = 'rafiou@domain.com',
             'comment_form[photo]' => dirname(__DIR__, 2).'/public/images/under-construction.gif',
         ]);
 
         $this->assertResponseRedirects();
+        $comment = self::$container->get(CommentRepository::class)->findOneByEmail($email);
+        $comment->setState('published');
+        $this->entityManager->flush();
+
         $this->client->followRedirect();
         $this->assertSelectorExists('div:contains("There are 1 comments")');
     }
