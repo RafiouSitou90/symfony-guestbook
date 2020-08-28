@@ -4,9 +4,17 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+//use Symfony\Component\Panther\Client;
+//use Symfony\Component\Panther\PantherTestCase;
 
+//class ConferenceControllerTest extends PantherTestCase
 class ConferenceControllerTest extends WebTestCase
 {
+//    /**
+//     * @var Client
+//     */
+//    protected Client $client;
+
     /**
      * @var KernelBrowser
      */
@@ -17,6 +25,8 @@ class ConferenceControllerTest extends WebTestCase
      */
     public function setUp (): void
     {
+//        $this->client = static::createPantherClient(['external_base_uri' => 'http://127.0.0.1:8000']);
+
         $this->client = static::createClient();
     }
 
