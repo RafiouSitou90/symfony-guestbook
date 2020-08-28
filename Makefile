@@ -33,9 +33,12 @@ fixtures-test:
 	$(sc) doctrine:fixtures:load -n --env=test
 .PHONY: fixtures-test
 
+## Run messenger workers in background
+workers:
+	$(s) run -d --watch=config,src,templates,vendor $(sc) messenger:consume async
+.PHONY: workers
 
 ## Run all tests
 tests:
-	$(sc) doctrine:fixtures:load -n
 	$(s) php bin/phpunit
 .PHONY: tests
