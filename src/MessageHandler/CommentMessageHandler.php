@@ -11,6 +11,7 @@ use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class CommentMessageHandler implements MessageHandlerInterface
@@ -89,15 +90,18 @@ class CommentMessageHandler implements MessageHandlerInterface
 
             $this->bus->dispatch($message);
 
-        } elseif ($this->workflow->can($comment, 'publish') || $this->workflow->can($comment, 'publish_ham')) {
-            $this->workflow->apply($comment, $this->workflow->can($comment, 'publish') ? 'publish' : 'publish_ham');
+        } elseif ($this->workflow
+                ->can($comment, 'publish') || $this->workflow->can($comment, 'publish_ham')) {
+            $this->workflow->apply($comment, $this->workflow->can($comment, 'publish')
+                ? 'publish' : 'publish_ham')
+            ;
             $this->entityManager->flush();
 
             $this->mailer->send((new NotificationEmail())
                     ->subject('New comment posted')
                     ->htmlTemplate('emails/comment_notification.html.twig')
-                    ->from($this->adminEmail)
-                    ->to($this->adminEmail)
+                    ->from(new Address('no-reply@symfony-guestbook.com', 'Symfony Guestbook') )
+                    ->to(new Address($this->adminEmail, 'Symfony Guestbook Administrator'))
                     ->context(['comment' => $comment])
                 )
             ;

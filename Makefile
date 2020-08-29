@@ -2,6 +2,11 @@ SHELL := /bin/bash
 s := symfony
 sc := symfony console
 
+## Clear cache
+cache:
+	$(sc) cache:clear
+	$(sc) cache:warmup
+.PHONY: cache
 
 ## Create database
 database:

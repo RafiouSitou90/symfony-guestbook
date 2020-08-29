@@ -21,6 +21,11 @@ services:
         ports:
             - 5672:15672
 
+    mailcatcher:
+        image: schickling/mailcatcher
+        ports:
+            - 1025:1080
+
     adminer:
         image: adminer
         environment:
