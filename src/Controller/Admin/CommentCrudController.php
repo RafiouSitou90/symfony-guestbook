@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
@@ -32,7 +33,11 @@ class CommentCrudController extends AbstractCrudController
             TextField::new('author'),
             TextEditorField::new('text'),
             EmailField::new('email'),
-            AssociationField::new('conference')->autocomplete()
+            AssociationField::new('conference'),
+            ChoiceField::new('state')->setChoices([
+                'submitted' => 'submitted',
+                'published' => 'published'
+            ])
         ];
 
         if ($pageName === Crud::PAGE_INDEX || $pageName === Crud::PAGE_DETAIL) {
