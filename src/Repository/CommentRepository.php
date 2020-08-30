@@ -6,6 +6,8 @@ use App\Entity\Comment;
 use App\Entity\Conference;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,9 +32,25 @@ class CommentRepository extends ServiceEntityRepository
 
     /**
      * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      * @throws Exception
      */
     public function countOldRejected (): int
+    {
+        return $this
+            ->getOldRejectedQueryBuilder()
+            ->select('COUNT(c.id')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    /**
+     * @return int
+     * @throws Exception
+     */
+    public function deleteOldRejected (): int
     {
         return $this->getOldRejectedQueryBuilder()
             ->delete()
