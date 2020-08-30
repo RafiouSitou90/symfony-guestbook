@@ -3,38 +3,67 @@
 {% block title %}Conference Guestbook &mdash; {{ conference }}{% endblock %}
 
 {% block body %}
-    <h2>{{ conference }} Conference</h2>
+    <h2 class="mb-5">
+        {{ conference }} Conference
+    </h2>
 
-    {% if comments | length > 0 %}
-        <div>There are {{ comments | length }} comments.</div>
-        {% for comment in comments %}
-            <h4>{{ comment.author }}</h4>
-            <small>{{ comment.createdAt | format_datetime('medium', 'short') }}</small>
-            <p>{{ comment.text | raw }}</p>
-            {% if comment.photofilename %}
-                <img
-                    src="{{ asset('uploads/photos/' ~ comment.photoFilename)}}"
-                    alt="{{ conference ~ ' ' ~ comment.author }}"
-                    style="width: 200px; height: 100px;"
-                />
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            {% if comments|length > 0 %}
+                {% for comment in comments %}
+                    <div class="media shadow border rounded-lg p-3 mb-4">
+                        <div class="comment-img mr-3">
+                            {% if comment.photofilename %}
+                                <a href="{{ asset('uploads/photos/' ~ comment.photoFilename) }}" target="_blank">
+                                    <img
+                                        src="{{ asset('uploads/photos/' ~ comment.photoFilename) }}"
+                                        alt="{{ conference }}"
+                                    />
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="media-body">
+                            <h4 class="font-weight-light mb-0">
+                                {{ comment.author }}
+                            </h4>
+
+                            <div class="mb-2">
+                                <small class="text-muted text-uppercase">
+                                    {{ comment.createdAt|format_datetime('medium', 'short') }}
+                                </small>
+                            </div>
+
+                            <div class="comment-text">
+                                {{ comment.text|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div>There are {{ comments|length }} comments.</div>
+                {% if previous >= 0 %}
+                    <a href="{{ path('app_conference_show', { slug: conference.slug, offset: previous }) }}">Previous</a>
+                {% endif %}
+                {% if next < comments|length %}
+                    <a href="{{ path('app_conference_show', { slug: conference.slug, offset: next }) }}">Next</a>
+                {% endif %}
+            {% else %}
+                <div class="text-center">
+                    No comments have been posted yet for this conference.
+                </div>
             {% endif %}
-        {% endfor %}
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="bg-light shadow border rounded-lg p-4">
+                <h3 class="font-weight-light">
+                    Add your own feedback
+                </h3>
 
-        {% if previous >= 0 %}
-            <a href="{{ path('app_conference_show', { slug: conference.slug, offset: previous }) }}">Previous</a>
-        {% endif %}
-
-        {% if next < comments | length %}
-            <a href="{{ path('app_conference_show', { slug: conference.slug, offset: next }) }}">Next</a>
-        {% endif %}
-    {% else %}
-        <div>No comments have been posted yet for this conference.</div>
-    {% endif %}
-
-    <h2>Add your own feedback</h2>
-
-    {{ form_start(comment_form) }}
-        {{ form_widget(comment_form) }}
-        <button type="submit">Submit</button>
-    {{ form_end(comment_form) }}
+                {{ form_start(comment_form) }}
+                    {{ form_widget(comment_form) }}
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                {{ form_end(comment_form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
