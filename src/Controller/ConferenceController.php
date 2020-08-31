@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -44,13 +46,18 @@ class ConferenceController extends AbstractController
      * @var MessageBusInterface
      */
     private MessageBusInterface $bus;
+    /**
+     * @var NotifierInterface
+     */
+    private NotifierInterface $notifier;
 
     public function __construct(
         string $photoDir,
         ConferenceRepository $conferenceRepository,
         CommentRepository $commentRepository,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        NotifierInterface $notifier
     )
     {
         $this->conferenceRepository = $conferenceRepository;
@@ -58,6 +65,7 @@ class ConferenceController extends AbstractController
         $this->entityManager = $entityManager;
         $this->photoDir = $photoDir;
         $this->bus = $bus;
+        $this->notifier = $notifier;
     }
 
     /**
@@ -130,7 +138,19 @@ class ConferenceController extends AbstractController
 
             $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
 
+            $this->notifier->send(new Notification(
+                'Thank you for the feedback; your comment will be posted after moderation.',
+                ['browser'])
+            );
+
             return $this->redirectToRoute('app_conference_show', ['slug' => $conference->getSlug()]);
+        }
+
+        if ($comment_form->isSubmitted()) {
+            $this->notifier->send(new Notification(
+                    'Can you check your submission? There are some problems with it.',
+                    ['browser'])
+            );
         }
 
         $offset = max(0, $request->query->getInt('offset', 0));
