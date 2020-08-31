@@ -5,12 +5,15 @@ namespace App\Controller\Admin;
 use App\Entity\Comment;
 use App\Message\CommentMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Workflow\Registry;
@@ -31,11 +34,23 @@ class AdminController extends AbstractController
      * @var MessageBusInterface
      */
     private MessageBusInterface $bus;
+    /**
+     * @var MailerInterface
+     */
+    private MailerInterface $mailer;
+    private string $noReplyEmail;
 
-    public function __construct (EntityManagerInterface $entityManager, MessageBusInterface $bus)
+    public function __construct (
+        EntityManagerInterface $entityManager,
+        MessageBusInterface $bus,
+        MailerInterface $mailer,
+        string $noReplyEmail
+    )
     {
         $this->entityManager = $entityManager;
         $this->bus = $bus;
+        $this->mailer = $mailer;
+        $this->noReplyEmail = $noReplyEmail;
     }
 
     /**
@@ -72,6 +87,14 @@ class AdminController extends AbstractController
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
             $this->bus->dispatch(new CommentMessage($comment->getId(), $reviewUrl));
+
+            $this->mailer->send((new TemplatedEmail())
+                ->subject('Comment posted')
+                ->from(new Address($this->noReplyEmail, 'Symfony Guestbook'))
+                ->to($comment->getEmail())
+                ->htmlTemplate('emails/user_comment_notification.html.twig')
+                ->context(['comment' => $comment])
+            );
         }
         return $this->render('admin/review.html.twig', [
             'transition' => $transition,
