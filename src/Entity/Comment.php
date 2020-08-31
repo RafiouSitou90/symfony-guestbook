@@ -2,14 +2,27 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Traits\Timestamps;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
  * @ORM\Table(name="tab_comments")
+ *
+ * @ApiResource(
+ *     collectionOperations = {"get" = {"normalization_context" = {"groups" = "comment:list"}}},
+ *     itemOperations = {"get" = {"normalization_context" = {"groups" = "comment:item"}}},
+ *     order = {"createdAt" = "DESC"},
+ *     paginationEnabled = false
+ * )
+ *
+ * @ApiFilter(SearchFilter::class, properties = {"conference": "exact"})
  *
  * @ORM\HasLifecycleCallbacks()
  */
@@ -21,18 +34,24 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @Groups({"comment:list", "comment:item"})
      */
     private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @Groups({"comment:list", "comment:item"})
      */
     private string $author;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
+     *
+     * @Groups({"comment:list", "comment:item"})
      */
     private string $text;
 
@@ -40,6 +59,8 @@ class Comment
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      * @Assert\Email()
+     *
+     * @Groups({"comment:list", "comment:item"})
      */
     private string $email;
 
@@ -51,6 +72,8 @@ class Comment
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     *
+     * @Groups({"comment:list", "comment:item"})
      */
     private ?string $photoFilename;
 
