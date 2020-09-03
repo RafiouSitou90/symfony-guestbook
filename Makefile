@@ -51,6 +51,12 @@ workers:
 ## Generate workflow image in public/uploads/ folder
 show-workflow:
 	$(sc) workflow:dump comment | dot -Tpng -o public/uploads/workflow.png
+.PHONY: show-workflow
+
+## Generate traduction files
+translation:
+	$(sc) translation:update fr --force --domain=messages
+.PHONY: translation
 
 
 ## Run all tests
