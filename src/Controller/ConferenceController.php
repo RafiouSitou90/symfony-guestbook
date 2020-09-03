@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Class ConferenceController
  * @package App\Controller
  *
- * @Route("", name="app_conference_")
+ * @Route(name="app_conference_")
  */
 class ConferenceController extends AbstractController
 {
@@ -70,7 +70,7 @@ class ConferenceController extends AbstractController
     }
 
     /**
-     * @Route("", name="index", methods={"GET"})
+     * @Route("/{_locale<%app.supported_locales%>}", name="index", methods={"GET"})
      */
     public function index ()
     {
@@ -82,7 +82,7 @@ class ConferenceController extends AbstractController
     }
 
     /**
-     * @Route("/conference_header", name="header", methods={"GET"})
+     * @Route("/{_locale<%app.supported_locales%>}/conference_header", name="header", methods={"GET"})
      *
      * @return Response
      */
@@ -98,7 +98,7 @@ class ConferenceController extends AbstractController
     }
 
     /**
-     * @Route("/conference/{slug}", name="show", methods={"GET", "POST"})
+     * @Route("/{_locale<%app.supported_locales%>}/conference/{slug}", name="show", methods={"GET", "POST"})
      *
      * @param Request $request
      * @param Conference $conference
@@ -169,4 +169,13 @@ class ConferenceController extends AbstractController
             'comment_form' => $comment_form->createView()
         ]);
     }
+
+    /**
+    * @Route("/")
+    */
+    public function indexNoLocale ()
+    {
+        return $this->redirectToRoute('app_conference_index', ['_locale' => 'en']);
+    }
+
 }
