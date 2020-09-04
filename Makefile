@@ -56,6 +56,7 @@ show-workflow:
 ## Generate traduction files
 translation:
 	$(sc) translation:update fr --force --domain=messages
+	$(sc) translation:update en --force --domain=messages
 .PHONY: translation
 
 

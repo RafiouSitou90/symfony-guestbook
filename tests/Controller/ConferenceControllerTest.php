@@ -41,7 +41,7 @@ class ConferenceControllerTest extends WebTestCase
 
     public function testIndex ()
     {
-        $this->client->request('GET', '/');
+        $this->client->request('GET', '/en/');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Give your feedback!');
@@ -49,7 +49,7 @@ class ConferenceControllerTest extends WebTestCase
 
     public function testConferencePage ()
     {
-        $crawler = $this->client->request('GET', '/');
+        $crawler = $this->client->request('GET', '/en/');
 
         $this->assertCount(3, $crawler->filter('h4'));
 
@@ -64,7 +64,7 @@ class ConferenceControllerTest extends WebTestCase
 
     public function testCommentSubmission ()
     {
-        $this->client->request('GET', '/conference/brasilia-2021');
+        $this->client->request('GET', '/en/conference/brasilia-2021');
 
         $this->client->submitForm('Submit', [
             'comment_form[author]' => 'Rafiou',
@@ -84,7 +84,7 @@ class ConferenceControllerTest extends WebTestCase
 
     public function testMailerAssertions ()
     {
-        $this->client->request('GET', '/');
+        $this->client->request('GET', '/en/');
 
         $this->assertEmailCount(1);
         $event = $this->getMailerEvent(0);
